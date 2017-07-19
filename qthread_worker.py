@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import *
 
 import time
 
-# 나노 컨텐츠를 가져오는 스레드
+# 컨텐츠를 가져오는 스레드
 class GetContentsWorker(QThread):
     total_elements = 0
     signal = pyqtSignal(str, QThread, str, QTableWidget)
