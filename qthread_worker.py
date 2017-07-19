@@ -25,7 +25,7 @@ class GetContentsWorker(QThread):
         self.duration = duration
 
     def run(self):
-        browser = oWebCrawler()
+        browser = WebCrawler()
         browser.login(self.user_id, self.user_password)
 
         while True:
