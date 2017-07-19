@@ -1,0 +1,55 @@
+from bs4 import BeautifulSoup as bs
+import requests
+
+# 웹크롤링 클래스
+class WebCrawler(requests.Session):
+
+    CONST_HEADER = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) '
+        'Chrome/56.0.2924.87 Safari/537.36'
+    }
+
+    def __init__(self):
+        super().__init__()
+
+    def login(self, user_id, user_password):
+        login_info = {
+            'username': user_id,
+            'password': user_password
+        }
+
+        main_page = self.get('로그인 URL', headers=NanoWebCrawler.CONST_HEADER)
+        main_page_html = main_page.text
+        soup = bs(main_page_html, 'lxml')
+        csrf = soup.find('input', attrs={'name': '_csrf'})
+
+        login_info = {**login_info, **{'_csrf': csrf['value']}}
+        login_req = self.post('로그인 URL', headers=NanoWebCrawler.CONST_HEADER, data=login_info)
+
+        try:
+            # 로그인에 성공 여부 판단
+            trace_user = login_req.headers['X-Trace-User']
+
+            if user_id not in trace_user:
+                raise Exception('아이디 또는 비밀번호 오류 입니다.')
+        except KeyError:
+            raise Exception('아이디 또는 비밀번호 오류 입니다.')
+
+    def get_page(self, page_url, data=None):
+        page = self.get(page_url, headers=NanoWebCrawler.CONST_HEADER, data=data)
+        page_html = bs(page.text, 'html.parser')
+        return page_html
+
+    def post_page(self, page_url, data=None):
+        page = self.post(page_url, headers=NanoWebCrawler.CONST_HEADER, data=data)
+        page_html = bs(page.text, 'html.parser')
+        return page_html
+
+if __name__ == '__main__':
+    crawler = WebCrawler()
+    try:
+        crawler.login('ID', 'PW')
+    except Exception as e:
+        print(e.args[0])
+    html = crawler.get_page('URL')
+
