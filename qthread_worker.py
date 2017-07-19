@@ -25,7 +25,7 @@ class GetContentsWorker(QThread):
         self.duration = duration
 
     def run(self):
-        browser = NanoWebCrawler()
+        browser = oWebCrawler()
         browser.login(self.user_id, self.user_password)
 
         while True:
@@ -55,7 +55,7 @@ class LoginWorker(QThread):
 
     def run(self):
         result = False;
-        browser = NanoWebCrawler()
+        browser = WebCrawler()
 
         try:
             browser.login(self.user_id, self.user_password)
